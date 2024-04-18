@@ -19,12 +19,14 @@ public class QuartoService {
         return quartoRepository.findAll();
     }
 
-    public Optional<Quarto> getQuartoByNumeroDoQuarto(String numeroDoQuarto){
-        return quartoRepository.getQuartoByNumeroDoQuarto(numeroDoQuarto);
-    }
     public Optional<Quarto> getQuartoById(Long id){
         return quartoRepository.findById(id);
     }
+
+    public Optional<Quarto> getQuartoByNumeroDoQuarto(String numeroDoQuarto){
+        return quartoRepository.getQuartoByNumeroDoQuarto(numeroDoQuarto);
+    }
+
     public void saveOrUpdateQuarto(Quarto quarto){
          quartoRepository.save(quarto);
     }

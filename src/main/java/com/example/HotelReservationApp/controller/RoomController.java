@@ -26,12 +26,58 @@ public class RoomController {
     @GetMapping
     public String getAllQuartos(Model model) {
         model.addAttribute("quartos", quartoService.getAllQuartos());
-        return "lista-quartos";
-    }
-    @GetMapping("/{id}")
-    public String getQuarto(@PathVariable Long id, Model model) {
-        model.addAttribute("quarto", quartoService.getQuarto(id));
-        return "quarto";
+        return "quarto-lista";
     }
 
+    @GetMapping("/{id}")
+    public String getQuartoById(@PathVariable Long id, Model model) {
+        Quarto quarto = quartoService.getQuartoById(id)
+                .orElseThrow(() -> new IllegalStateException("Invalido id do Quarto: " + id));
+        model.addAttribute("quarto", quarto);
+        return "quarto-details";
+    }
+
+    @GetMapping("/numeroDoQuarto/{numeroDoQuarto}")
+    public String getQuartoByNumeroDoQuarto(@PathVariable String numeroDoQuarto, Model model) {
+        Quarto quarto = quartoService.getQuartoByNumeroDoQuarto(numeroDoQuarto)
+                .orElseThrow(() -> new IllegalStateException("Invalido Numero do Quarto: " + numeroDoQuarto));
+        model.addAttribute("quarto", quarto);
+        return "quarto-details";
+    }
+
+    @PostMapping
+    public String adicionarQuarto(Quarto quarto, BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "quarto-form";
+        }
+        quartoService.saveOrUpdateQuarto(quarto);
+        redirectAttributes.addFlashAttribute("message", "Quarto adicionado com sucesso!");
+        return "redirect:/quartos";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editQuarto(@PathVariable Long id, Model model) {
+        Quarto quarto = quartoService.getQuartoById(id)
+                .orElseThrow(() -> new IllegalStateException("Invalido id do Quarto: " + id));
+        model.addAttribute("quarto", quarto);
+        return "quarto-form";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String updateQuarto(@PathVariable Long id, @RequestBody Quarto quarto, BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "quarto-form";
+        }
+        quarto.setId(id);
+        quartoService.saveOrUpdateQuarto(quarto);
+        redirectAttributes.addFlashAttribute("message", "Quarto atualizado com sucesso!");
+        return "redirect:/quartos";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteQuarto(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        quartoService.delete(id);
+        redirectAttributes.addFlashAttribute("message", "Quarto deletado com sucesso!");
+        return "redirect:/quartos";
+    }
 }
